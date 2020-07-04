@@ -1,4 +1,6 @@
 const tbl_User = require("../models/user.model");
+const bcrypt = require('bcrypt');
+const salt = bcrypt.genSaltSync(10);
 
 exports.create = (req, res) => {
     if (!req.body) {
@@ -10,7 +12,7 @@ exports.create = (req, res) => {
     const user = new tbl_User({
         email : req.body.email,
         nama : req.body.nama,
-        password : req.body.password
+        password: bcrypt.hashSync(req.body.password, salt)
     });
 
     tbl_User.create(user, (err, data) => {
@@ -20,8 +22,6 @@ exports.create = (req, res) => {
             });
         else res.send(data);
     });
-
-
 };
 
 exports.findAll = (req, res) => {

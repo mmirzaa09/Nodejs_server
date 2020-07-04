@@ -1,4 +1,5 @@
 const sql = require("./db.js");
+const connection = require("./db.js");
 
 const tbl_User = function (user) {
     this.email = user.email;
