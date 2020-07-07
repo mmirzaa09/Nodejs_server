@@ -11,10 +11,18 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
+    "connect-redis": "^4.0.4",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "ioredis": "^4.17.3",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.4",
     "uuid": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/connect-redis": "^0.0.14",
+    "@types/express-session": "^1.17.0",
+    "@types/ioredis": "^4.17.0",
+    "@types/mysql": "^2.15.14"
   }
 }

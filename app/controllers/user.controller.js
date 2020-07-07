@@ -1,4 +1,4 @@
-const tbl_User = require("../models/user.model");
+const User = require("../models/user.model");
 const bcrypt = require('bcrypt');
 const salt = bcrypt.genSaltSync(10);
 
@@ -9,13 +9,13 @@ exports.create = (req, res) => {
         });
     }
 
-    const user = new tbl_User({
+    const user = new User({
         email : req.body.email,
         nama : req.body.nama,
         password: bcrypt.hashSync(req.body.password, salt)
     });
 
-    tbl_User.create(user, (err, data) => {
+    User.create(user, (err, data) => {
         if (err)
             res.status(500).send({
                 message: err.message || "Some error occured.",
@@ -25,7 +25,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-    tbl_User.getAll((err, data) =>{
+    User.getAll((err, data) =>{
         if(err)
         res.status(500).send({
             message: err.message || "Some Error Occurred.",
@@ -35,7 +35,7 @@ exports.findAll = (req, res) => {
 }
 
 exports.findOne = (req, res) => {
-    tbl_User.findById(req.params.userId, (err, data) => {
+    User.findById(req.params.userId, (err, data) => {
         if (err) {
             if(err.kind === "Not Found") {
             res.status(404).send({
@@ -59,9 +59,9 @@ exports.update = (req, res) => {
         });
     }
 
-    tbl_User.updateById(
+    User.updateById(
         req.params.userId,
-        new tbl_User(req.body),
+        new User(req.body),
         (err, data) => {
             if(err) {
                 if(err.kind === "not found") {
@@ -82,7 +82,7 @@ exports.update = (req, res) => {
 
 
 exports.delete = (req, res) => {
-    tbl_User.remove(req.params.userId, (err, data) =>{
+    User.remove(req.params.userId, (err, data) =>{
         if (err) {
             if(err.kind === "not found") {
                 res.status(404).send({
@@ -100,7 +100,7 @@ exports.delete = (req, res) => {
 };
 
 exports.deleteAll = (req, res) => {
-    tbl_User.removeAll((err, data) =>{
+    User.removeAll((err, data) =>{
         if(err) {
             res.status(500).send({
                 message: 

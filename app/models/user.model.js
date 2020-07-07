@@ -1,29 +1,33 @@
 const sql = require("./db.js");
-const connection = require("./db.js");
+const bcrypt = require('bcrypt');
+const salt = bcrypt.genSaltSync(10);
 
-const tbl_User = function (user) {
+const User = function (user) {
     this.email = user.email;
     this.nama = user.nama;
-    this.password = user.password;
+    this.password = bcrypt.hashSync(user.password, salt);
 };
 
-tbl_User.create = (newUser, result) => {
-    sql.query("INSERT INTO tbl_user SET ?", newUser, (err, res) =>{
-        if(err){
-            console.log("ERROR :", err);
+User.create = (newUser, result, req, next) => {
+    sql.query("INSERT INTO tbl_user SET ?", newUser, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
             result(err, null);
-            return;
         }
-
-        console.log("Create User: ", {id: res.insertId, ...newUser});
-        result(null, {id: res.insertId, ...newUser});
+        console.log("created customer: ", {
+            id: res.insertId,
+            ...newUser
+        });
+        result(null, {
+            id: res.insertId,
+            ...newUser
+        });
     });
 };
 
-
-tbl_User.findById = (userId, result) => {
+User.findById = (email, result) => {
     sql.query(
-        `SELECT * FROM tbl_user WHERE id = ${userId}`,
+        `SELECT * FROM tbl_user WHERE id = ${email}`,
         (err, res) => {
             if(err) {
                 console.log("ERROR :", err);
@@ -35,13 +39,12 @@ tbl_User.findById = (userId, result) => {
                 result(null, res);
                 return;
             }
-
-            result({ kind: "not found"}, null);
+            result({ kind: "email not found"}, null);
         }
     );
 };
 
-tbl_User.getAll = result => {
+User.getAll = result => {
     sql.query("SELECT * FROM tbl_user", (err, res) =>{
         if(err) {
             console.log("ERROR", err);
@@ -54,7 +57,7 @@ tbl_User.getAll = result => {
     });
 };
 
-tbl_User.updateById = (id, user, result) => {
+User.updateById = (id, user, result) => {
     sql.query(
         "UPDATE tbl_user SET email= ?, nama=?, password = ? WHERE id= ?",
         [user.email, user.nama, user.password, id],
@@ -76,7 +79,7 @@ tbl_User.updateById = (id, user, result) => {
     );
 };
 
-tbl_User.remove = (id, result) => {
+User.remove = (id, result) => {
     sql.query("DELETE FROM tbl_user WHERE id = ?", id, (err, res) => {
         if(err){
             console.log("ERROR :", err);
@@ -94,7 +97,7 @@ tbl_User.remove = (id, result) => {
     });
 };
 
-tbl_User.removeAll = (result) => {
+User.removeAll = (result) => {
     sql.query("DELETE FROM tbl_user", (err, res) => {
         if(err) {
             console.log("ERROR :", err);
@@ -107,4 +110,4 @@ tbl_User.removeAll = (result) => {
     });
 };
 
-module.exports = tbl_User;
+module.exports = User;
