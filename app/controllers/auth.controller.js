@@ -1,25 +1,34 @@
-const User = require("../models/auth.model");
-const bcrypt = require('bcrypt');
-const salt = bcrypt.genSaltSync(10);
+const sql = require("../models/db");
 
-exports.auth = (req, res) => {
-    if (!req.body) {
-        res.status(400).send({
-            message: "Content can not be empty !",
-        });
-    }
-    const user = new User({
-        email: req.body.email,
-        nama: req.body.nama,
-        password: bcrypt.hashSync(req.body.password, salt)
-    });
-
-    User.auth(user, (err, data) => {
-        if (err){
-            res.status(500).send({
-                message: err.message || "Some error occured.",
-            });
+exports.login = async function (req, res) {
+    var email = req.body.email;
+    var password = req.body.password;
+    sql.query('SELECT * FROM tbl_user WHERE email = ? AND password = ?', [email, password], async function (error, results, fields) {
+        if (error) {
+            res.send({
+                "code": 400,
+                "failed": "error ocurred"
+            })
+        } else {
+            if (results.length > 0) {
+                const pass = (password, results[0])
+                if (pass) {
+                    res.send({
+                        "code": 200,
+                        "success": "login successfully"
+                    })
+                } else {
+                    res.send({
+                        "code": 204,
+                        "success": "Email and password does not match"
+                    })
+                }
+            } else {
+                res.send({
+                    "code": 206,
+                    "success": "Email and Password does not match"
+                });
+            }
         }
-        else res.send(data);
     });
-};
+}

@@ -5,29 +5,41 @@ const salt = bcrypt.genSaltSync(10);
 const User = function (user) {
     this.email = user.email;
     this.nama = user.nama;
-    this.password = bcrypt.hashSync(user.password, salt);
+    this.password = user.password;
 };
 
-User.create = (newUser, result, req, next) => {
-    sql.query("INSERT INTO tbl_user SET ?", newUser, (err, res) => {
-        if (err) {
-            console.log("error: ", err);
-            result(err, null);
+User.create = (newUser, result, email, nama) => {
+    sql.query(`SELECT * FROM tbl_user WHERE email = ${email} AND nama = ${nama}`, newUser,
+        (err, res) => {
+            // if (res) {
+            //     console.log("email and nama already exist!");
+            //     console.log(res, null);
+            //     result(null, res);
+            // }
+            if(err) {
+                sql.query('INSERT INTO tbl_user SET ?', newUser,
+                (err, res) => {
+                    if(err) {
+                        console.log('error :', err)
+                        result(err, null);
+                    }
+                    console.log('create user :', {
+                        id: res.insertId,
+                        ...newUser
+                    })
+                    result(null, {
+                        id: res.insertId,
+                        ...newUser
+                    });
+                });
+            }
         }
-        console.log("created customer: ", {
-            id: res.insertId,
-            ...newUser
-        });
-        result(null, {
-            id: res.insertId,
-            ...newUser
-        });
-    });
+    )
 };
 
-User.findById = (email, result) => {
+User.findById = (id, result) => {
     sql.query(
-        `SELECT * FROM tbl_user WHERE id = ${email}`,
+        `SELECT * FROM tbl_user WHERE id = ${id}`,
         (err, res) => {
             if(err) {
                 console.log("ERROR :", err);
@@ -39,7 +51,7 @@ User.findById = (email, result) => {
                 result(null, res);
                 return;
             }
-            result({ kind: "email not found"}, null);
+            result({ kind: "id not found"}, null);
         }
     );
 };

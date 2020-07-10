@@ -14,7 +14,12 @@ module.exports = (app) =>{
 
     app.delete("/users", users.deleteAll);
 
+    app.post('/login', auth.login);
 
+    // app.post('/login', (req, res) => {
+    //     console.log('Inside POST /login callback function')
+    //     console.log(req.body)
+    //     res.send(`You posted to the login page!\n`)
+    // })
 
-    // app.users("/auth", auth);
 }

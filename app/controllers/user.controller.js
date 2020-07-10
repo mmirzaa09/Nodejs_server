@@ -12,7 +12,7 @@ exports.create = (req, res) => {
     const user = new User({
         email : req.body.email,
         nama : req.body.nama,
-        password: bcrypt.hashSync(req.body.password, salt)
+        password: req.body.password
     });
 
     User.create(user, (err, data) => {
@@ -23,16 +23,6 @@ exports.create = (req, res) => {
         else res.send(data);
     });
 };
-
-exports.findAll = (req, res) => {
-    User.getAll((err, data) =>{
-        if(err)
-        res.status(500).send({
-            message: err.message || "Some Error Occurred.",
-        });
-        else res.send(data);
-    })
-}
 
 exports.findOne = (req, res) => {
     User.findById(req.params.userId, (err, data) => {
@@ -51,6 +41,17 @@ exports.findOne = (req, res) => {
         } else res.send(data);
     });
 };
+
+exports.findAll = (req, res) => {
+    User.getAll((err, data) =>{
+        if(err)
+        res.status(500).send({
+            message: err.message || "Some Error Occurred.",
+        });
+        else res.send(data);
+    })
+}
+
 
 exports.update = (req, res) => {
     if(!req.body) {
